@@ -1,6 +1,3 @@
-#include <math.h>
-#include <stdlib.h>
-
 #include "system.h"
 
 DpSystem *dp_system_new() {

@@ -2,4 +2,4 @@
 
 a.out
 *.o
-target/
+build/
