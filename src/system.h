@@ -22,6 +22,6 @@ typedef struct DpSystem {
 } DpSystem;
 
 DpSystem *dp_system_new();
-void dp_system_destroy(DpSystem *dp);
+void dp_system_destroy(DpSystem *system);
 
 #endif /* DP_SYSTEM_H */
