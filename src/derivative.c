@@ -1,0 +1,50 @@
+#include "derivative.h"
+#include "linear.h"
+
+DpStateDerivative *dp_state_derivative(DpSystem *system, DpState *state) {
+    DpStateDerivative *d =
+        (DpStateDerivative *)malloc(sizeof(DpStateDerivative));
+    if (d == NULL) {
+        return NULL;
+    }
+
+    double a1 = state->phi1;
+    double a2 = state->phi2;
+    double v1 = state->omega1;
+    double v2 = state->omega2;
+
+    double m1 = system->m1;
+    double m2 = system->m2;
+    double l1 = system->l1;
+    double l2 = system->l2;
+    double g = system->g;
+
+    double m[2][2];
+    m[0][0] = (m1 + m2) * l1;
+    m[0][1] = m2 * l2 * cos(a1 - a2);
+    m[1][0] = l1 * cos(a1 - a2);
+    m[1][1] = l2;
+
+    double f[2];
+    f[0] = -m2 * l2 * v2 * v2 * sin(a1 - a2) - (m1 + m2) * g * sin(a1);
+    f[1] = l1 * v1 * v1 * sin(a1 - a2) - g * sin(a2);
+
+    double inv_m[2][2];
+    if (invert_2x2(m, inv_m) != 0) {
+        d->omega1 = v1;
+        d->omega2 = v2;
+        d->alpha1 = 0.0;
+        d->alpha2 = 0.0;
+        return d;
+    }
+
+    double alpha1 = inv_m[0][0] * f[0] + inv_m[0][1] * f[1];
+    double alpha2 = inv_m[1][0] * f[0] + inv_m[1][1] * f[1];
+
+    d->omega1 = v1;
+    d->omega2 = v2;
+    d->alpha1 = alpha1;
+    d->alpha2 = alpha2;
+
+    return d;
+}
