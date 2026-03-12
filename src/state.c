@@ -16,7 +16,20 @@ DpState *dp_state_new(double phi1, double phi2) {
     return state;
 }
 
+DpState *dp_state_copy(DpState *src) {
+    DpState *dst = (DpState *)malloc(sizeof(DpState));
+    if (dst == NULL) {
+        return NULL;
+    }
+
+    dst->phi1 = src->phi1;
+    dst->phi2 = src->phi2;
+    dst->omega1 = src->omega1;
+    dst->omega2 = src->omega2;
+
+    return dst;
+}
+
 void dp_state_destroy(DpState *state) {
     free(state);
 }
-
