@@ -2,6 +2,9 @@
 
 DpSystem *dp_system_new() {
     DpSystem *system = (DpSystem *)malloc(sizeof(DpSystem));
+    if (system == NULL) {
+        return NULL;
+    }
 
     system->m1 = 3;
     system->m2 = 3;

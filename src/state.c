@@ -4,6 +4,9 @@
 
 DpState *dp_state_new(double phi1, double phi2) {
     DpState *state = (DpState *)malloc(sizeof(DpState));
+    if (state == NULL) {
+        return NULL;
+    }
 
     state->phi1 = phi1;
     state->phi2 = phi2;
@@ -20,6 +23,9 @@ void dp_state_destroy(DpState *state) {
 DpStateDerivative *dp_state_derivative(DpSystem *system, DpState *state) {
     DpStateDerivative *d =
         (DpStateDerivative *)malloc(sizeof(DpStateDerivative));
+    if (d == NULL) {
+        return NULL;
+    }
 
     double a1 = state->phi1;
     double a2 = state->phi2;
