@@ -1,7 +1,17 @@
+# C
 .ccls-cache/
-
 a.out
 *.o
 build/
 
+# Python
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+.venv
+
+# Misc
 *.csv
