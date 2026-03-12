@@ -30,6 +30,15 @@ DpState *dp_state_copy(DpState *src) {
     return dst;
 }
 
+void dp_state_write(DpState *state, DpSystem *system, FILE *stream) {
+    double x1 = system->l1 * sin(state->phi1);
+    double y1 = -system->l1 * cos(state->phi1);
+    double x2 = x1 + system->l2 * sin(state->phi2);
+    double y2 = y1 - system->l2 * cos(state->phi2);
+
+    fprintf(stream, "%.6f,%.6f,%.6f,%.6f\n", x1, y1, x2, y2);
+}
+
 void dp_state_destroy(DpState *state) {
     free(state);
 }

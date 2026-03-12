@@ -20,7 +20,7 @@ void dp_rk4(DpSystem *system, DpState *state) {
     dp_derivative_destroy(k3_tmp_pr);
     dp_state_destroy(k3_tmp_st);
 
-    // k3
+    // k4
     DpStateDerivative *k4_tmp_pr = dp_derivative_scale(k3, h);
     DpState *k4_tmp_st = dp_state_add(state, k4_tmp_pr);
     DpStateDerivative *k4 = dp_state_derivative(system, k4_tmp_st);
