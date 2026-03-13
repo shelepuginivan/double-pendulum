@@ -1,4 +1,5 @@
 #include "system.h"
+#include "env.h"
 
 DpSystem *dp_system_new() {
     DpSystem *system = (DpSystem *)malloc(sizeof(DpSystem));
@@ -18,32 +19,17 @@ DpSystem *dp_system_new() {
     return system;
 }
 
-static void dp_getenv_into_double_(const char *name, double *dst) {
-    char *envvar = getenv(name);
-    if (envvar == NULL) {
-        return;
-    }
-
-    char *endptr;
-    double value = strtod(envvar, &endptr);
-    if (endptr == envvar) {
-        return;
-    }
-
-    *dst = value;
-}
-
 DpSystem *dp_system_new_from_env() {
     DpSystem *system = dp_system_new();
 
-    dp_getenv_into_double_("DP_SYSTEM_M1", &system->m1);
-    dp_getenv_into_double_("DP_SYSTEM_M2", &system->m2);
-    dp_getenv_into_double_("DP_SYSTEM_L1", &system->l1);
-    dp_getenv_into_double_("DP_SYSTEM_L2", &system->l2);
-    dp_getenv_into_double_("DP_SYSTEM_PHI1", &system->phi1);
-    dp_getenv_into_double_("DP_SYSTEM_PHI2", &system->phi2);
-    dp_getenv_into_double_("DP_SYSTEM_G", &system->g);
-    dp_getenv_into_double_("DP_SYSTEM_DT", &system->dt);
+    dp_env_load_into_double("DP_SYSTEM_M1", &system->m1);
+    dp_env_load_into_double("DP_SYSTEM_M2", &system->m2);
+    dp_env_load_into_double("DP_SYSTEM_L1", &system->l1);
+    dp_env_load_into_double("DP_SYSTEM_L2", &system->l2);
+    dp_env_load_into_double("DP_SYSTEM_PHI1", &system->phi1);
+    dp_env_load_into_double("DP_SYSTEM_PHI2", &system->phi2);
+    dp_env_load_into_double("DP_SYSTEM_G", &system->g);
+    dp_env_load_into_double("DP_SYSTEM_DT", &system->dt);
 
     return system;
 }
