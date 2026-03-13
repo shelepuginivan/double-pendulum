@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "env.h"
 #include "methods.h"
 #include "state.h"
 #include "system.h"
@@ -16,6 +17,26 @@ DpSimulation *dp_simulation_new() {
     s->steps = 1000000;
     s->stepfn = dp_rk4;
     s->output = "-";
+
+    return s;
+}
+
+DpSimulation *dp_simulation_new_from_env() {
+    DpSimulation *s = dp_simulation_new();
+
+    dp_env_load_into_ulong("DP_SIMULATION_STEPS", &s->steps);
+    dp_env_load_into_str("DP_SIMULATION_OUTPUT", &s->output);
+
+    char *stepfn = getenv("DP_SIMULATION_METHOD");
+    if (stepfn == NULL) {
+        return s;
+    }
+
+    if (strcmp(stepfn, "RK4") == 0) {
+        s->stepfn = dp_rk4;
+    } else if (strcmp(stepfn, "RK3/8") == 0) {
+        s->stepfn = dp_rk38;
+    }
 
     return s;
 }
@@ -34,7 +55,7 @@ int dp_simulation_run(DpSimulation *simulation, DpSystem *system) {
 
     DpState *state = dp_state_new_from_system(system);
 
-    for (int i = 0; i < simulation->steps; i++) {
+    for (unsigned long i = 0; i < simulation->steps; i++) {
         dp_state_write(state, system, output);
         simulation->stepfn(state, system);
     }

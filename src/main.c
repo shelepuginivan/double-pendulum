@@ -6,7 +6,7 @@
 
 int main() {
     DpSystem *system = dp_system_new_from_env();
-    DpSimulation *simulation = dp_simulation_new();
+    DpSimulation *simulation = dp_simulation_new_from_env();
 
     int st = dp_simulation_run(simulation, system);
     if (st != 0) {
