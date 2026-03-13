@@ -1,6 +1,6 @@
 #include "linear.h"
 
-int invert_2x2(const double m[2][2], double inv[2][2]) {
+int dp_invert_2x2_(const double m[2][2], double inv[2][2]) {
     double det = m[0][0] * m[1][1] - m[0][1] * m[1][0];
     if (fabs(det) < 1e-12) {
         return -1;
