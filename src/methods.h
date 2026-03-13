@@ -8,5 +8,6 @@
 void dp_rk_ralston(DpState *state, DpSystem *system);
 void dp_rk4(DpState *state, DpSystem *system);
 void dp_rk38(DpState *state, DpSystem *system);
+void dp_rk_dopri(DpState *state, DpSystem *system);
 
 #endif /* DP_METHODS_H */

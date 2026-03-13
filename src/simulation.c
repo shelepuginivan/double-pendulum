@@ -38,6 +38,8 @@ DpSimulation *dp_simulation_new_from_env() {
         s->stepfn = dp_rk4;
     } else if (strcmp(stepfn, "RK3/8") == 0) {
         s->stepfn = dp_rk38;
+    } else if (strcmp(stepfn, "DOPRI") == 0) {
+        s->stepfn = dp_rk_dopri;
     }
 
     return s;
