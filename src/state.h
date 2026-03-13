@@ -14,6 +14,7 @@ typedef struct DpState {
 } DpState;
 
 DpState *dp_state_new(double phi1, double phi2);
+DpState *dp_state_new_from_system(DpSystem *system);
 DpState *dp_state_copy(DpState *src);
 void dp_state_write(DpState *state, DpSystem *system, FILE *stream);
 void dp_state_destroy(DpState *state);

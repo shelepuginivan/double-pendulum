@@ -7,7 +7,7 @@
 
 int main() {
     DpSystem *system = dp_system_new_from_env();
-    DpState *state = dp_state_new(system->phi1, system->phi2);
+    DpState *state = dp_state_new_from_system(system);
 
     FILE *out = fopen("data.csv", "w");
     if (out == NULL) {
@@ -15,9 +15,9 @@ int main() {
         return 1;
     }
 
-    for (int i = 0; i < 1000000; i++) {
+    for (int i = 0; i < 200000; i++) {
         dp_state_write(state, system, out);
-        dp_rk4(system, state);
+        dp_rk4(state, system);
     }
 
     fclose(out);

@@ -5,6 +5,6 @@
 #include "state.h"
 #include "system.h"
 
-void dp_rk4(DpSystem *system, DpState *state);
+void dp_rk4(DpState *state, DpSystem *system);
 
 #endif /* DP_METHODS_H */

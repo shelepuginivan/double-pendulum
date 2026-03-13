@@ -1,29 +1,29 @@
 #include "methods.h"
 
-void dp_rk4(DpSystem *system, DpState *state) {
+void dp_rk4(DpState *state, DpSystem *system) {
     double h = system->dt;
 
     // k1
-    DpStateDerivative *k1 = dp_state_derivative(system, state);
+    DpStateDerivative *k1 = dp_state_derivative(state, system);
 
     // k2
     DpStateDerivative *k2_tmp_pr = dp_derivative_scale(k1, h / 2);
     DpState *k2_tmp_st = dp_state_add(state, k2_tmp_pr);
-    DpStateDerivative *k2 = dp_state_derivative(system, k2_tmp_st);
+    DpStateDerivative *k2 = dp_state_derivative(k2_tmp_st, system);
     dp_derivative_destroy(k2_tmp_pr);
     dp_state_destroy(k2_tmp_st);
 
     // k3
     DpStateDerivative *k3_tmp_pr = dp_derivative_scale(k2, h / 2);
     DpState *k3_tmp_st = dp_state_add(state, k3_tmp_pr);
-    DpStateDerivative *k3 = dp_state_derivative(system, k3_tmp_st);
+    DpStateDerivative *k3 = dp_state_derivative(k3_tmp_st, system);
     dp_derivative_destroy(k3_tmp_pr);
     dp_state_destroy(k3_tmp_st);
 
     // k4
     DpStateDerivative *k4_tmp_pr = dp_derivative_scale(k3, h);
     DpState *k4_tmp_st = dp_state_add(state, k4_tmp_pr);
-    DpStateDerivative *k4 = dp_state_derivative(system, k4_tmp_st);
+    DpStateDerivative *k4 = dp_state_derivative(k4_tmp_st, system);
     dp_derivative_destroy(k4_tmp_pr);
     dp_state_destroy(k4_tmp_st);
 

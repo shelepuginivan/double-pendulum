@@ -37,7 +37,7 @@ void dp_derivative_scale_mut(DpStateDerivative *d, double s) {
     d->alpha2 *= s;
 }
 
-DpStateDerivative *dp_state_derivative(DpSystem *system, DpState *state) {
+DpStateDerivative *dp_state_derivative(DpState *state, DpSystem *system) {
     DpStateDerivative *d =
         (DpStateDerivative *)malloc(sizeof(DpStateDerivative));
     if (d == NULL) {

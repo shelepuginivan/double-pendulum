@@ -11,7 +11,7 @@ typedef struct DpStateDerivative {
     double alpha2;
 } DpStateDerivative;
 
-DpStateDerivative *dp_state_derivative(DpSystem *system, DpState *state);
+DpStateDerivative *dp_state_derivative(DpState *state, DpSystem *system);
 DpState *dp_state_add(DpState *state, DpStateDerivative *d);
 DpStateDerivative *dp_derivative_scale(DpStateDerivative *d, double s);
 void dp_derivative_scale_mut(DpStateDerivative *d, double s);
