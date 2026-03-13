@@ -2,8 +2,7 @@
 #include "linear.h"
 
 DpStateDerivative *dp_derivative_scale(DpStateDerivative *d, double s) {
-    DpStateDerivative *r =
-        (DpStateDerivative *)malloc(sizeof(DpStateDerivative));
+    DpStateDerivative *r = (DpStateDerivative *)malloc(sizeof(DpStateDerivative));
     if (r == NULL) {
         return NULL;
     }
@@ -24,8 +23,7 @@ void dp_derivative_scale_mut(DpStateDerivative *d, double s) {
 }
 
 DpStateDerivative *dp_state_derivative(DpState *state, DpSystem *system) {
-    DpStateDerivative *d =
-        (DpStateDerivative *)malloc(sizeof(DpStateDerivative));
+    DpStateDerivative *d = (DpStateDerivative *)malloc(sizeof(DpStateDerivative));
     if (d == NULL) {
         return NULL;
     }

@@ -1,5 +1,7 @@
 ---
 BasedOnStyle: LLVM
-IndentWidth: 4
+
 AllowShortFunctionsOnASingleLine: None
+ColumnLimit: 100
+IndentWidth: 4
 ---
