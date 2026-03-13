@@ -1,91 +1,63 @@
 #include "methods.h"
 
-void dp_rk4(DpState *state, DpSystem *system) {
+static void dp_rk_generic_(DpState *state, DpSystem *system, int order, const double tableau[]) {
     double h = system->dt;
+    int t_ptr = 0;
+
+    DpStateDerivative *k[order];
 
     // k1
-    DpStateDerivative *k1 = dp_state_derivative(state, system);
+    k[0] = dp_state_derivative(state, system);
 
-    // k2
-    DpStateDerivative *k2_tmp_pr = dp_derivative_scale(k1, h / 2);
-    DpState *k2_tmp_st = dp_state_add(state, k2_tmp_pr);
-    DpStateDerivative *k2 = dp_state_derivative(k2_tmp_st, system);
-    dp_derivative_destroy(k2_tmp_pr);
-    dp_state_destroy(k2_tmp_st);
+    // k1, k2, ..., k_s
+    for (int s = 1; s < order; s++) {
+        DpState *state_s = dp_state_copy(state);
 
-    // k3
-    DpStateDerivative *k3_tmp_pr = dp_derivative_scale(k2, h / 2);
-    DpState *k3_tmp_st = dp_state_add(state, k3_tmp_pr);
-    DpStateDerivative *k3 = dp_state_derivative(k3_tmp_st, system);
-    dp_derivative_destroy(k3_tmp_pr);
-    dp_state_destroy(k3_tmp_st);
+        for (int i = 0; i < s; i++) {
+            double a_si = tableau[t_ptr++];
+            DpStateDerivative *ki_scaled = dp_derivative_scale(k[i], h * a_si);
+            dp_state_add_mut(state_s, ki_scaled);
+            dp_derivative_destroy(ki_scaled);
+        }
 
-    // k4
-    DpStateDerivative *k4_tmp_pr = dp_derivative_scale(k3, h);
-    DpState *k4_tmp_st = dp_state_add(state, k4_tmp_pr);
-    DpStateDerivative *k4 = dp_state_derivative(k4_tmp_st, system);
-    dp_derivative_destroy(k4_tmp_pr);
-    dp_state_destroy(k4_tmp_st);
+        k[s] = dp_state_derivative(state_s, system);
+        dp_state_destroy(state_s);
+    }
 
-    dp_derivative_scale_mut(k1, h / 6);
-    dp_derivative_scale_mut(k2, h / 3);
-    dp_derivative_scale_mut(k3, h / 3);
-    dp_derivative_scale_mut(k4, h / 6);
+    // b1, ..., b_s
+    for (int s = 0; s < order; s++) {
+        double b_i = tableau[t_ptr++];
+        dp_derivative_scale_mut(k[s], h * b_i);
 
-    state->phi1 += k1->omega1 + k2->omega1 + k3->omega1 + k4->omega1;
-    state->phi2 += k1->omega2 + k2->omega2 + k3->omega2 + k4->omega2;
-    state->omega1 += k1->alpha1 + k2->alpha1 + k3->alpha1 + k4->alpha1;
-    state->omega2 += k1->alpha2 + k2->alpha2 + k3->alpha2 + k4->alpha2;
+        state->phi1 += k[s]->omega1;
+        state->phi2 += k[s]->omega2;
+        state->omega1 += k[s]->alpha1;
+        state->omega2 += k[s]->alpha2;
 
-    dp_derivative_destroy(k1);
-    dp_derivative_destroy(k2);
-    dp_derivative_destroy(k3);
-    dp_derivative_destroy(k4);
+        dp_derivative_destroy(k[s]);
+    }
+}
+
+void dp_rk4(DpState *state, DpSystem *system) {
+    // clang-format off
+    double tableau[] = {
+        1.0/2,
+        0.0,   1.0/2,
+        0.0,   0.0,   1.0,
+        1.0/6, 1.0/3, 1.0/3, 1.0/6,
+    };
+    // clang-format on
+    dp_rk_generic_(state, system, 4, tableau);
 }
 
 void dp_rk38(DpState *state, DpSystem *system) {
-    double h = system->dt;
-
-    // k1
-    DpStateDerivative *k1 = dp_state_derivative(state, system);
-
-    // k2
-    DpStateDerivative *k2_tmp_pr = dp_derivative_scale(k1, h / 3);
-    DpState *k2_tmp_st = dp_state_add(state, k2_tmp_pr);
-    DpStateDerivative *k2 = dp_state_derivative(k2_tmp_st, system);
-    dp_derivative_destroy(k2_tmp_pr);
-    dp_state_destroy(k2_tmp_st);
-
-    // k3
-    DpStateDerivative *k3_tmp_pr1 = dp_derivative_scale(k1, -h / 3);
-    DpStateDerivative *k3_tmp_pr2 = dp_derivative_scale(k2, h);
-    DpState *k3_tmp_st = dp_state_add(state, k3_tmp_pr1);
-    dp_state_add_mut(k3_tmp_st, k3_tmp_pr2);
-    DpStateDerivative *k3 = dp_state_derivative(k3_tmp_st, system);
-    dp_derivative_destroy(k3_tmp_pr1);
-    dp_derivative_destroy(k3_tmp_pr2);
-    dp_state_destroy(k3_tmp_st);
-
-    // k4
-    DpStateDerivative *k4_tmp_pr1 = dp_derivative_scale(k1, h);
-    DpStateDerivative *k4_tmp_pr2 = dp_derivative_scale(k2, -h);
-    DpStateDerivative *k4_tmp_pr3 = dp_derivative_scale(k3, h);
-    DpState *k4_tmp_st = dp_state_add(state, k4_tmp_pr1);
-    dp_state_add_mut(k4_tmp_st, k4_tmp_pr2);
-    dp_state_add_mut(k4_tmp_st, k4_tmp_pr3);
-    DpStateDerivative *k4 = dp_state_derivative(k4_tmp_st, system);
-    dp_derivative_destroy(k4_tmp_pr1);
-    dp_derivative_destroy(k4_tmp_pr2);
-    dp_derivative_destroy(k4_tmp_pr3);
-    dp_state_destroy(k4_tmp_st);
-
-    state->phi1 += k1->omega1 + k2->omega1 + k3->omega1 + k4->omega1;
-    state->phi2 += k1->omega2 + k2->omega2 + k3->omega2 + k4->omega2;
-    state->omega1 += k1->alpha1 + k2->alpha1 + k3->alpha1 + k4->alpha1;
-    state->omega2 += k1->alpha2 + k2->alpha2 + k3->alpha2 + k4->alpha2;
-
-    dp_derivative_destroy(k1);
-    dp_derivative_destroy(k2);
-    dp_derivative_destroy(k3);
-    dp_derivative_destroy(k4);
+    // clang-format off
+    double tableau[] = {
+         1.0/3,
+        -1.0/3,  1.0,
+         1.0,   -1.0,   1.0,
+         1.0/8,  3.0/8, 3.0/8, 1.0/8,
+    };
+    // clang-format on
+    dp_rk_generic_(state, system, 4, tableau);
 }
