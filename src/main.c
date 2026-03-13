@@ -6,7 +6,7 @@
 #include "system.h"
 
 int main() {
-    DpSystem *system = dp_system_new();
+    DpSystem *system = dp_system_new_from_env();
     DpState *state = dp_state_new(system->phi1, system->phi2);
 
     FILE *out = fopen("data.csv", "w");
