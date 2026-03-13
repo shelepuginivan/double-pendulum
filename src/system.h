@@ -16,8 +16,6 @@ typedef struct DpSystem {
 
     double g;
 
-    double dissipation_factor;
-
     double dt;
 } DpSystem;
 

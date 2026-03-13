@@ -13,7 +13,6 @@ DpSystem *dp_system_new() {
     system->phi1 = M_PI;
     system->phi2 = M_PI_2;
     system->g = 9.81;
-    system->dissipation_factor = 1;
     system->dt = 0.0001;
 
     return system;
