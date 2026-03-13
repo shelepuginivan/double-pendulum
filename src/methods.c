@@ -38,6 +38,17 @@ static void dp_rk_generic_(DpState *state, DpSystem *system, int order, const do
     }
 }
 
+void dp_rk_ralston(DpState *state, DpSystem *system) {
+    // clang-format off
+    double tableau[] = {
+        1.0/2,
+        0.0,   3.0/4,
+        2.0/9, 1.0/3, 4.0/9,
+    };
+    // clang-format on
+    dp_rk_generic_(state, system, 3, tableau);
+}
+
 void dp_rk4(DpState *state, DpSystem *system) {
     // clang-format off
     double tableau[] = {

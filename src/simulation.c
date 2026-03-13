@@ -32,7 +32,9 @@ DpSimulation *dp_simulation_new_from_env() {
         return s;
     }
 
-    if (strcmp(stepfn, "RK4") == 0) {
+    if (strcmp(stepfn, "ralston") == 0) {
+        s->stepfn = dp_rk_ralston;
+    } else if (strcmp(stepfn, "RK4") == 0) {
         s->stepfn = dp_rk4;
     } else if (strcmp(stepfn, "RK3/8") == 0) {
         s->stepfn = dp_rk38;
