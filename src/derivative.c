@@ -1,20 +1,6 @@
 #include "derivative.h"
 #include "linear.h"
 
-DpState *dp_state_add(DpState *state, DpStateDerivative *d) {
-    DpState *r = dp_state_copy(state);
-    if (r == NULL) {
-        return state;
-    }
-
-    r->phi1 += d->omega1;
-    r->phi2 += d->omega2;
-    r->omega1 += d->alpha1;
-    r->omega2 += d->alpha2;
-
-    return r;
-}
-
 DpStateDerivative *dp_derivative_scale(DpStateDerivative *d, double s) {
     DpStateDerivative *r =
         (DpStateDerivative *)malloc(sizeof(DpStateDerivative));
@@ -87,4 +73,25 @@ DpStateDerivative *dp_state_derivative(DpState *state, DpSystem *system) {
 
 void dp_derivative_destroy(DpStateDerivative *d) {
     free(d);
+}
+
+DpState *dp_state_add(DpState *state, DpStateDerivative *d) {
+    DpState *r = dp_state_copy(state);
+    if (r == NULL) {
+        return state;
+    }
+
+    r->phi1 += d->omega1;
+    r->phi2 += d->omega2;
+    r->omega1 += d->alpha1;
+    r->omega2 += d->alpha2;
+
+    return r;
+}
+
+void dp_state_add_mut(DpState *state, DpStateDerivative *d) {
+    state->phi1 += d->omega1;
+    state->phi2 += d->omega2;
+    state->omega1 += d->alpha1;
+    state->omega2 += d->alpha2;
 }

@@ -42,3 +42,50 @@ void dp_rk4(DpState *state, DpSystem *system) {
     dp_derivative_destroy(k3);
     dp_derivative_destroy(k4);
 }
+
+void dp_rk38(DpState *state, DpSystem *system) {
+    double h = system->dt;
+
+    // k1
+    DpStateDerivative *k1 = dp_state_derivative(state, system);
+
+    // k2
+    DpStateDerivative *k2_tmp_pr = dp_derivative_scale(k1, h / 3);
+    DpState *k2_tmp_st = dp_state_add(state, k2_tmp_pr);
+    DpStateDerivative *k2 = dp_state_derivative(k2_tmp_st, system);
+    dp_derivative_destroy(k2_tmp_pr);
+    dp_state_destroy(k2_tmp_st);
+
+    // k3
+    DpStateDerivative *k3_tmp_pr1 = dp_derivative_scale(k1, -h / 3);
+    DpStateDerivative *k3_tmp_pr2 = dp_derivative_scale(k2, h);
+    DpState *k3_tmp_st = dp_state_add(state, k3_tmp_pr1);
+    dp_state_add_mut(k3_tmp_st, k3_tmp_pr2);
+    DpStateDerivative *k3 = dp_state_derivative(k3_tmp_st, system);
+    dp_derivative_destroy(k3_tmp_pr1);
+    dp_derivative_destroy(k3_tmp_pr2);
+    dp_state_destroy(k3_tmp_st);
+
+    // k4
+    DpStateDerivative *k4_tmp_pr1 = dp_derivative_scale(k1, h);
+    DpStateDerivative *k4_tmp_pr2 = dp_derivative_scale(k2, -h);
+    DpStateDerivative *k4_tmp_pr3 = dp_derivative_scale(k3, h);
+    DpState *k4_tmp_st = dp_state_add(state, k4_tmp_pr1);
+    dp_state_add_mut(k4_tmp_st, k4_tmp_pr2);
+    dp_state_add_mut(k4_tmp_st, k4_tmp_pr3);
+    DpStateDerivative *k4 = dp_state_derivative(k4_tmp_st, system);
+    dp_derivative_destroy(k4_tmp_pr1);
+    dp_derivative_destroy(k4_tmp_pr2);
+    dp_derivative_destroy(k4_tmp_pr3);
+    dp_state_destroy(k4_tmp_st);
+
+    state->phi1 += k1->omega1 + k2->omega1 + k3->omega1 + k4->omega1;
+    state->phi2 += k1->omega2 + k2->omega2 + k3->omega2 + k4->omega2;
+    state->omega1 += k1->alpha1 + k2->alpha1 + k3->alpha1 + k4->alpha1;
+    state->omega2 += k1->alpha2 + k2->alpha2 + k3->alpha2 + k4->alpha2;
+
+    dp_derivative_destroy(k1);
+    dp_derivative_destroy(k2);
+    dp_derivative_destroy(k3);
+    dp_derivative_destroy(k4);
+}
