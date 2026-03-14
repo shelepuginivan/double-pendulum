@@ -1,5 +1,4 @@
 import sys
-from dataclasses import dataclass
 
 import matplotlib
 
@@ -18,15 +17,15 @@ class Config(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="DP_GRAPHICS_")
 
 
-@dataclass
 class Dataset:
-    csv_file: str
+    def __init__(self, csv_file: str) -> None:
+        self.__csv_file = csv_file
 
     def plot(self, cfg: Config, color: str) -> None:
         frame_duration = 1 / cfg.framerate
         rows_per_frame = int(frame_duration / cfg.dt)
 
-        with open(self.csv_file) as csv:
+        with open(self.__csv_file) as csv:
             for idx, row in enumerate(csv):
                 if idx % rows_per_frame != 0:
                     continue
