@@ -32,7 +32,7 @@ class Dataset:
                     continue
 
                 _, _, x2, y2 = map(float, row.split(","))
-                plt.scatter(x2, y2, color=color, marker="o", s=1)
+                plt.scatter(x2, y2, color=color, marker="o", s=1, alpha=0.5)
 
 
 def main() -> None:
@@ -46,7 +46,7 @@ def main() -> None:
     for csv, color in zip(csv_files, cfg.colors):
         Dataset(csv).plot(cfg, color)
 
-    plt.savefig(cfg.plot_output)
+    plt.savefig(cfg.plot_output, dpi=300)
 
 
 if __name__ == "__main__":
