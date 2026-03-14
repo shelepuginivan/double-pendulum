@@ -5,6 +5,7 @@ description = "TODO"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "manim>=0.20.1",
     "matplotlib>=3.10.8",
     "pydantic-settings>=2.13.1",
 ]
