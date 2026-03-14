@@ -12,6 +12,8 @@ dist/
 wheels/
 *.egg-info
 .venv
+.ruff_cache
 
 # Misc
 *.csv
+*.png
