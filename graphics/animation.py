@@ -2,16 +2,15 @@ from typing import Iterable
 
 from manim import *  # type: ignore
 from manim.typing import Vector2D
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import Field, PositiveFloat, PositiveInt
+from pydantic_settings import BaseSettings
 
 
 class Config(BaseSettings):
-    framerate: int
-    dt: float
-    dataset: str
-    trail_dissipating_time: float = 0.5
-
-    model_config = SettingsConfigDict(env_prefix="DP_GRAPHICS_")
+    dt: PositiveFloat = Field(default=0.0001, alias="dp_system_dt")
+    framerate: PositiveInt = Field(default=24, alias="dp_animation_framerate")
+    dataset: str = Field(alias="dp_animation_dataset")
+    trail: float = Field(default=0.5, alias="dp_animation_trail")
 
     @property
     def frame_duration(self) -> float:
@@ -19,8 +18,7 @@ class Config(BaseSettings):
 
     @property
     def rows_per_frame(self) -> int:
-        frame_duration = 1 / self.framerate
-        return int(frame_duration / self.dt)
+        return int(self.frame_duration / self.dt)
 
 
 class DoublePendulum(Scene):
@@ -68,7 +66,7 @@ class DoublePendulum(Scene):
         rod2 = self.rod(dot1, dot2)
         trail = TracedPath(
             dot2.get_center,
-            dissipating_time=self.cfg.trail_dissipating_time,
+            dissipating_time=self.cfg.trail,
             stroke_color=RED,
         )
         self.add(axes, pivot, dot1, dot2, rod1, rod2, trail)

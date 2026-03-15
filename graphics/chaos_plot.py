@@ -1,20 +1,31 @@
 import sys
+from typing import Annotated, Any
 
 import matplotlib
 
 matplotlib.use("Agg")
 
 import matplotlib.pyplot as plt
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import Field, PositiveFloat, PositiveInt, field_validator
+from pydantic_settings import BaseSettings, NoDecode
 
 
 class Config(BaseSettings):
-    framerate: int
-    dt: float
-    colors: list[str] = ["red", "blue", "green", "orange", "purple", "brown"]
-    plot_output: str = "chaos.png"
+    dt: PositiveFloat = Field(default=0.0001, alias="dp_system_dt")
+    framerate: PositiveInt = Field(default=2, alias="dp_chaos_framerate")
+    colors: Annotated[list[str], NoDecode] = Field(
+        default_factory=lambda: ["red", "blue", "green", "orange"],
+        alias="dp_chaos_colors",
+    )
+    output: str = Field(default="chaos.png", alias="dp_chaos_output")
 
-    model_config = SettingsConfigDict(env_prefix="DP_GRAPHICS_")
+    @field_validator("colors", mode="before")
+    @classmethod
+    def validate_colors(cls, v: Any) -> list[str]:
+        if isinstance(v, str):
+            return v.split(",")
+        else:
+            return v
 
     @property
     def rows_per_frame(self) -> int:
@@ -47,7 +58,7 @@ def main() -> None:
     for csv, color in zip(csv_files, cfg.colors):
         Dataset(csv).plot(cfg, color)
 
-    plt.savefig(cfg.plot_output, dpi=300)
+    plt.savefig(cfg.output, dpi=300)
 
 
 if __name__ == "__main__":
