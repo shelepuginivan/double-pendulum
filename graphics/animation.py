@@ -9,6 +9,7 @@ class Config(BaseSettings):
     framerate: int
     dt: float
     dataset: str
+    trail_dissipating_time: float = 0.5
 
     model_config = SettingsConfigDict(env_prefix="DP_GRAPHICS_")
 
@@ -64,7 +65,12 @@ class DoublePendulum(Scene):
         dot2 = Dot().set_color(RED).move_to(p2).set_z_index(1)
         rod1 = self.rod(pivot, dot1)
         rod2 = self.rod(dot1, dot2)
-        self.add(pivot, dot1, dot2, rod1, rod2)
+        trail = TracedPath(
+            dot2.get_center,
+            dissipating_time=self.cfg.trail_dissipating_time,
+            stroke_color=RED,
+        )
+        self.add(pivot, dot1, dot2, rod1, rod2, trail)
         self.wait()
 
         for p1, p2 in rows:
