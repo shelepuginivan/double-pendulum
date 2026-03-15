@@ -1,5 +1,7 @@
 # Double Pendulum
 
+![Demo](./assets/demo.gif)
+
 ## Simulation
 
 Build the simulation program:
