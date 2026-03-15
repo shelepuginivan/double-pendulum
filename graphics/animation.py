@@ -60,6 +60,7 @@ class DoublePendulum(Scene):
         else:
             raise RuntimeError("cannot determine initial coordinates")
 
+        axes = NumberPlane().set_color(GRAY).set_opacity(0.1)
         pivot = Dot().set_color(GRAY).set_z_index(1)
         dot1 = Dot().set_color(BLUE).move_to(p1).set_z_index(1)
         dot2 = Dot().set_color(RED).move_to(p2).set_z_index(1)
@@ -70,7 +71,7 @@ class DoublePendulum(Scene):
             dissipating_time=self.cfg.trail_dissipating_time,
             stroke_color=RED,
         )
-        self.add(pivot, dot1, dot2, rod1, rod2, trail)
+        self.add(axes, pivot, dot1, dot2, rod1, rod2, trail)
         self.wait()
 
         for p1, p2 in rows:
