@@ -13,6 +13,10 @@ class Config(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="DP_GRAPHICS_")
 
     @property
+    def frame_duration(self) -> float:
+        return 1 / self.framerate
+
+    @property
     def rows_per_frame(self) -> int:
         frame_duration = 1 / self.framerate
         return int(frame_duration / self.dt)
@@ -35,6 +39,17 @@ class DoublePendulum(Scene):
                 x1, y1, x2, y2 = map(float, row.split(","))
                 yield x1 * RIGHT + y1 * UP, x2 * RIGHT + y2 * UP
 
+    def rod(self, dot1: Dot, dot2: Dot) -> Line:
+        return (
+            Line(dot1.get_center(), dot2.get_center())
+            .set_color(GRAY)
+            .add_updater(
+                lambda mob: mob.become(
+                    Line(dot1.get_center(), dot2.get_center()).set_color(GRAY)
+                )
+            )
+        )
+
     def construct(self):
         rows = self.iter_rows()
 
@@ -44,9 +59,18 @@ class DoublePendulum(Scene):
         else:
             raise RuntimeError("cannot determine initial coordinates")
 
-        pivot = Dot().set_color(RED)
-        dot1 = Dot().move_to(p1)
-        dot2 = Dot().move_to(p2)
-
-        self.add(pivot, dot1, dot2)
+        pivot = Dot().set_color(GRAY).set_z_index(1)
+        dot1 = Dot().set_color(BLUE).move_to(p1).set_z_index(1)
+        dot2 = Dot().set_color(RED).move_to(p2).set_z_index(1)
+        rod1 = self.rod(pivot, dot1)
+        rod2 = self.rod(dot1, dot2)
+        self.add(pivot, dot1, dot2, rod1, rod2)
         self.wait()
+
+        for p1, p2 in rows:
+            self.play(
+                dot1.animate.move_to(p1),
+                dot2.animate.move_to(p2),
+                run_time=self.cfg.frame_duration,
+                rate_func=linear,
+            )
