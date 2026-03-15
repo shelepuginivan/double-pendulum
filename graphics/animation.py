@@ -8,6 +8,8 @@ from pydantic_settings import BaseSettings
 
 class Config(BaseSettings):
     dt: PositiveFloat = Field(default=0.0001, alias="dp_system_dt")
+    m1: PositiveFloat = Field(default=1, alias="dp_system_m1")
+    m2: PositiveFloat = Field(default=1, alias="dp_system_m2")
     framerate: PositiveInt = Field(default=24, alias="dp_animation_framerate")
     dataset: str = Field(alias="dp_animation_dataset")
     trail: float = Field(default=0.5, alias="dp_animation_trail")
@@ -60,8 +62,18 @@ class DoublePendulum(Scene):
 
         axes = NumberPlane().set_color(GRAY).set_opacity(0.1)
         pivot = Dot().set_color(GRAY).set_z_index(1)
-        dot1 = Dot().set_color(BLUE).move_to(p1).set_z_index(1)
-        dot2 = Dot().set_color(RED).move_to(p2).set_z_index(1)
+        dot1 = (
+            Dot(radius=self.cfg.m1 * DEFAULT_DOT_RADIUS)
+            .set_color(BLUE)
+            .move_to(p1)
+            .set_z_index(1)
+        )
+        dot2 = (
+            Dot(radius=self.cfg.m2 * DEFAULT_DOT_RADIUS)
+            .set_color(RED)
+            .move_to(p2)
+            .set_z_index(1)
+        )
         rod1 = self.rod(pivot, dot1)
         rod2 = self.rod(dot1, dot2)
         trail = TracedPath(

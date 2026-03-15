@@ -86,4 +86,8 @@ Environment variables are as follows.
 | `DP_ANIMATION_DATASET`   | CSV file to animate data from                         | _path_  | —       |
 | `DP_ANIMATION_TRAIL`     | Duration of the trail of the second weight in seconds | _float_ | 0.5     |
 
-Similar to chaos plot, `DP_SYSTEM_DT` is used with `DP_ANIMATION_FRAMERATE` for sampling of coordinates.
+Similar to chaos plot, `DP_SYSTEM_DT` is used with `DP_ANIMATION_FRAMERATE` for
+sampling of coordinates.
+
+Radius of the weight points are controlled by `DP_SYSTEM_M1` and `DP_SYSTEM_M2`
+env variables (`DEFAULT_DOT_RADIUS` constant is used by default).
