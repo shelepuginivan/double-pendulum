@@ -50,7 +50,7 @@ The resulting CSV file contains rows with coordinates of weights
 
 For explicit Runge-Kutta methods (`ralston`, `RK4`, `RK3/8`) the timespan
 between rows is `DP_SYSTEM_DT`, for embedded (`DOPRI5`, `DOPRI8`) it is scaled
-after each step based computation error, using system parameters.
+after each step, based on computation error and system parameters.
 
 
 ## Chaos plot
