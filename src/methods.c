@@ -73,12 +73,15 @@ double dp_rk_embedded_(DpState *state, DpSystem *system, int order, const double
         dp_derivative_destroy(k[s]);
     }
 
-    double err_phi_1 = fabs(state->phi1 - state_hat->phi1);
-    double err_phi_2 = fabs(state->phi2 - state_hat->phi2);
-    double err_omega_1 = fabs(state->omega1 - state_hat->omega1);
-    double err_omega_2 = fabs(state->omega2 - state_hat->omega2);
+    double d_phi_1 = fabs(state->phi1 - state_hat->phi1);
+    double d_phi_2 = fabs(state->phi2 - state_hat->phi2);
+    double d_omega_1 = fabs(state->omega1 - state_hat->omega1);
+    double d_omega_2 = fabs(state->omega2 - state_hat->omega2);
 
-    dp_state_destroy(state_hat);
+    double err_phi_1 = d_phi_1 / (system->atol_phi1 + system->rtol_phi1 * state->phi1);
+    double err_phi_2 = d_phi_2 / (system->atol_phi2 + system->rtol_phi2 * state->phi2);
+    double err_omega_1 = d_omega_1 / (system->atol_omega1 + system->rtol_omega1 * state->omega1);
+    double err_omega_2 = d_omega_2 / (system->atol_omega2 + system->rtol_omega2 * state->omega2);
 
     return fmax(fmax(err_phi_1, err_phi_2), fmax(err_omega_1, err_omega_2));
 }
