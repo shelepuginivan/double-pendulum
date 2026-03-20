@@ -56,7 +56,8 @@ after each step based computation error, using system parameters.
 ## Chaos plot
 
 > [!note]
-> Chaos plot requires [uv](https://docs.astral.sh/uv/) to be installed.
+> The graphics are generated using Python, managed with
+> [uv](https://docs.astral.sh/uv/). Make sure it is installed and working.
 
 Chaos plot demonstrates how two systems with nearly identical settings diverge
 over time. It consists of coordinate points of the second weight.
@@ -86,9 +87,6 @@ coordinates for plotting.
 
 
 ## Animation
-
-> [!note]
-> Animation requires [uv](https://docs.astral.sh/uv/) to be installed.
 
 [Manim](https://www.manim.community/) animation of the double pendulum system.
 
