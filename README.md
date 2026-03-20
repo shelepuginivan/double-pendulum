@@ -1,5 +1,8 @@
 # Double Pendulum
 
+Simulation of [Double pendulum](https://en.wikipedia.org/wiki/Double_pendulum)
+with configurable parameters.
+
 ![Demo](./assets/demo.gif)
 
 ## Simulation
@@ -15,26 +18,39 @@ The compiled binary is written to `./build/double-pendulum`.
 Both double pendulum system and simulation are configured via environment
 variables.
 
-| Variable         | Description                     | Value    | Default |
-| ---------------- | ------------------------------- | -------- | ------- |
-| `DP_SYSTEM_M1`   | Mass of the first weight        | _double_ | 3       |
-| `DP_SYSTEM_M2`   | Mass of the second weight       | _double_ | 3       |
-| `DP_SYSTEM_L1`   | Length of the first rod         | _double_ | 2       |
-| `DP_SYSTEM_L2`   | Length of the second rod        | _double_ | 1       |
-| `DP_SYSTEM_PHI1` | Initial angle of the first rod  | _double_ | π       |
-| `DP_SYSTEM_PHI2` | Initial angle of the second rod | _double_ | π/2     |
-| `DP_SYSTEM_G`    | Gravitational acceleration      | _double_ | 9.81    |
-| `DP_SYSTEM_DT`   | Time delta in seconds           | _double_ | 0.0001  |
+| Variable                   | Description                                | Value    | Default |
+| -------------------------- | ------------------------------------------ | -------- | ------- |
+| `DP_SYSTEM_M1`             | Mass of the first weight                   | _double_ | 3       |
+| `DP_SYSTEM_M2`             | Mass of the second weight                  | _double_ | 3       |
+| `DP_SYSTEM_L1`             | Length of the first rod                    | _double_ | 2       |
+| `DP_SYSTEM_L2`             | Length of the second rod                   | _double_ | 1       |
+| `DP_SYSTEM_PHI1`           | Initial angle of the first rod             | _double_ | π       |
+| `DP_SYSTEM_PHI2`           | Initial angle of the second rod            | _double_ | π/2     |
+| `DP_SYSTEM_G`              | Gravitational acceleration                 | _double_ | 9.81    |
+| `DP_SYSTEM_DT`             | Time delta in seconds                      | _double_ | 0.0001  |
+| `DP_SYSTEM_ATOL_PHI1`      | Absolute tolerance of the first angle      | _double_ | 1e-6    |
+| `DP_SYSTEM_RTOL_PHI1`      | Relative tolerance of the first angle      | _double_ | 1e-4    |
+| `DP_SYSTEM_ATOL_PHI2`      | A. tol. of the second angle                | _double_ | 1e-6    |
+| `DP_SYSTEM_RTOL_PHI2`      | R. tol. of the second angle                | _double_ | 1e-4    |
+| `DP_SYSTEM_ATOL_OMEGA1`    | A. tol. of the first angular velocity      | _double_ | 1e-6    |
+| `DP_SYSTEM_RTOL_OMEGA1`    | R. tol. of the first angular velocity      | _double_ | 1e-4    |
+| `DP_SYSTEM_ATOL_OMEGA2`    | A. tol. of the second angular velocity     | _double_ | 1e-6    |
+| `DP_SYSTEM_RTOL_OMEGA2`    | R. tol. of the second angular velocity     | _double_ | 1e-4    |
+| `DP_SYSTEM_ERR_MIN_FACTOR` | Min dt scaling factor for embedded methods | _double_ | 0.25    |
+| `DP_SYSTEM_ERR_MAX_FACTOR` | Max dt scaling factor for embedded methods | _double_ | 4.0     |
 
-| Variable               | Description            | Value                              | Default |
-| ---------------------- | ---------------------- | ---------------------------------- | ------- |
-| `DP_SIMULATION_STEPS`  | Number of steps        | _non-negative int_                 | 1000000 |
-| `DP_SIMULATION_METHOD` | ODE computation method | "ralston", "RK4", "RK3/8", "DOPRI" | "RK4"   |
-| `DP_SIMULATION_OUTPUT` | Output CSV file        | _path_ or "-" for stdout           | "-"     |
+| Variable                 | Description                    | Value                                          | Default |
+| ------------------------ | ------------------------------ | ---------------------------------------------- | ------- |
+| `DP_SIMULATION_DURATION` | Simulation duration in seconds | _double_                                       | 30      |
+| `DP_SIMULATION_METHOD`   | ODE computation method         | "ralston", "RK4", "RK3/8", "DOPRI5", "DOPRI8"  | "RK4"   |
+| `DP_SIMULATION_OUTPUT`   | Output CSV file                | _path_ or "-" for stdout                       | "-"     |
 
-The resulting CSV file contains a total of `DP_SIMULATION_STEPS` rows with
-coordinates of weights (`x1,y1,x2,y2`). `DP_SYSTEM_DT` is the timespan between
-rows.
+The resulting CSV file contains rows with coordinates of weights
+(`x1,y1,x2,y2`).
+
+For explicit Runge-Kutta methods (`ralston`, `RK4`, `RK3/8`) the timespan
+between rows is `DP_SYSTEM_DT`, for embedded (`DOPRI5`, `DOPRI8`) it is scaled
+after each step based computation error, using system parameters.
 
 
 ## Chaos plot
