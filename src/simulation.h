@@ -5,9 +5,10 @@
 #include "system.h"
 
 typedef struct DpSimulation {
-    unsigned long steps;
+    double duration;
     char *output;
-    void (*stepfn)(DpState *state, DpSystem *system);
+    double (*stepfn)(DpState *state, DpSystem *system);
+    int stepfn_order;
 } DpSimulation;
 
 DpSimulation *dp_simulation_new();

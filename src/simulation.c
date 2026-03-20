@@ -14,8 +14,9 @@ DpSimulation *dp_simulation_new() {
         return NULL;
     }
 
-    s->steps = 1000000;
+    s->duration = 30;
     s->stepfn = dp_rk4;
+    s->stepfn_order = 4;
     s->output = "-";
 
     return s;
@@ -24,7 +25,7 @@ DpSimulation *dp_simulation_new() {
 DpSimulation *dp_simulation_new_from_env() {
     DpSimulation *s = dp_simulation_new();
 
-    dp_env_load_into_ulong("DP_SIMULATION_STEPS", &s->steps);
+    dp_env_load_into_double("DP_SIMULATION_DURATION", &s->duration);
     dp_env_load_into_str("DP_SIMULATION_OUTPUT", &s->output);
 
     char *stepfn = getenv("DP_SIMULATION_METHOD");
@@ -34,12 +35,16 @@ DpSimulation *dp_simulation_new_from_env() {
 
     if (strcmp(stepfn, "ralston") == 0) {
         s->stepfn = dp_rk_ralston;
+        s->stepfn_order = 3;
     } else if (strcmp(stepfn, "RK4") == 0) {
         s->stepfn = dp_rk4;
+        s->stepfn_order = 4;
     } else if (strcmp(stepfn, "RK3/8") == 0) {
         s->stepfn = dp_rk38;
+        s->stepfn_order = 4;
     } else if (strcmp(stepfn, "DOPRI") == 0) {
         s->stepfn = dp_rk_dopri;
+        s->stepfn_order = 4;
     }
 
     return s;
@@ -58,10 +63,26 @@ int dp_simulation_run(DpSimulation *simulation, DpSystem *system) {
     }
 
     DpState *state = dp_state_new_from_system(system);
+    dp_state_write(state, system, output);
+    double elapsed = 0.0;
+    double exp = 1.0 / simulation->stepfn_order;
 
-    for (unsigned long i = 0; i < simulation->steps; i++) {
-        dp_state_write(state, system, output);
-        simulation->stepfn(state, system);
+    while (elapsed < simulation->duration) {
+        DpState *prev = dp_state_copy(state);
+        double err = simulation->stepfn(state, system);
+
+        if (err > 1) {
+            dp_state_destroy(state);
+            state = prev;
+        } else {
+            dp_state_destroy(prev);
+            dp_state_write(state, system, output);
+            elapsed += system->dt;
+        }
+
+        double factor = pow(1.0 / err, exp);
+        factor = fmax(system->err_min_factor, fmin(system->err_max_factor, factor));
+        system->dt *= factor;
     }
 
     if (output_is_file) {

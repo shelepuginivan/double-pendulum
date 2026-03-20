@@ -23,6 +23,8 @@ DpSystem *dp_system_new() {
     system->rtol_omega1 = 1e-4;
     system->atol_omega2 = 1e-6;
     system->rtol_omega2 = 1e-4;
+    system->err_min_factor = 4.0;
+    system->err_max_factor = 0.25;
 
     return system;
 }

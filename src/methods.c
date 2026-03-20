@@ -24,7 +24,7 @@ void dp_rk_base_(DpState *state, DpSystem *system, int order, const double table
     }
 }
 
-void dp_rk_explicit_(DpState *state, DpSystem *system, int order, const double tableau[]) {
+double dp_rk_explicit_(DpState *state, DpSystem *system, int order, const double tableau[]) {
     double h = system->dt;
     int t_ptr = order * (order - 1) / 2;
 
@@ -43,6 +43,8 @@ void dp_rk_explicit_(DpState *state, DpSystem *system, int order, const double t
 
         dp_derivative_destroy(k[s]);
     }
+
+    return 1.0;
 }
 
 double dp_rk_embedded_(DpState *state, DpSystem *system, int order, const double tableau[]) {
@@ -83,10 +85,12 @@ double dp_rk_embedded_(DpState *state, DpSystem *system, int order, const double
     double err_omega_1 = d_omega_1 / (system->atol_omega1 + system->rtol_omega1 * state->omega1);
     double err_omega_2 = d_omega_2 / (system->atol_omega2 + system->rtol_omega2 * state->omega2);
 
+    dp_state_destroy(state_hat);
+
     return fmax(fmax(err_phi_1, err_phi_2), fmax(err_omega_1, err_omega_2));
 }
 
-void dp_rk_ralston(DpState *state, DpSystem *system) {
+double dp_rk_ralston(DpState *state, DpSystem *system) {
     // clang-format off
     double tableau[] = {
         1.0/2,
@@ -94,10 +98,10 @@ void dp_rk_ralston(DpState *state, DpSystem *system) {
         2.0/9, 1.0/3, 4.0/9,
     };
     // clang-format on
-    dp_rk_explicit_(state, system, 3, tableau);
+    return dp_rk_explicit_(state, system, 3, tableau);
 }
 
-void dp_rk4(DpState *state, DpSystem *system) {
+double dp_rk4(DpState *state, DpSystem *system) {
     // clang-format off
     double tableau[] = {
         1.0/2,
@@ -106,10 +110,10 @@ void dp_rk4(DpState *state, DpSystem *system) {
         1.0/6, 1.0/3, 1.0/3, 1.0/6,
     };
     // clang-format on
-    dp_rk_explicit_(state, system, 4, tableau);
+    return dp_rk_explicit_(state, system, 4, tableau);
 }
 
-void dp_rk38(DpState *state, DpSystem *system) {
+double dp_rk38(DpState *state, DpSystem *system) {
     // clang-format off
     double tableau[] = {
          1.0/3,
@@ -118,10 +122,10 @@ void dp_rk38(DpState *state, DpSystem *system) {
          1.0/8,  3.0/8, 3.0/8, 1.0/8,
     };
     // clang-format on
-    dp_rk_explicit_(state, system, 4, tableau);
+    return dp_rk_explicit_(state, system, 4, tableau);
 }
 
-void dp_rk_dopri(DpState *state, DpSystem *system) {
+double dp_rk_dopri(DpState *state, DpSystem *system) {
     // clang-format off
     double tableau[] = {
         1.0/5,
@@ -134,5 +138,5 @@ void dp_rk_dopri(DpState *state, DpSystem *system) {
         5179.0/57600,  0.0,          7571.0/16695, 393.0/640, -92097.0/339200, 187.0/2100, 1.0/40,
     };
     // clang-format on
-    dp_rk_embedded_(state, system, 7, tableau);
+    return dp_rk_embedded_(state, system, 7, tableau);
 }

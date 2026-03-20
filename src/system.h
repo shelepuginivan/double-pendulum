@@ -21,6 +21,8 @@ typedef struct DpSystem {
     double rtol_omega1;
     double atol_omega2;
     double rtol_omega2;
+    double err_min_factor;
+    double err_max_factor;
 } DpSystem;
 
 DpSystem *dp_system_new();
