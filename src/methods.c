@@ -1,15 +1,14 @@
 #include "methods.h"
 
-static void dp_rk_generic_(DpState *state, DpSystem *system, int order, const double tableau[]) {
+void dp_rk_base_(DpState *state, DpSystem *system, int order, const double tableau[],
+                 DpStateDerivative *k[order]) {
     double h = system->dt;
     int t_ptr = 0;
-
-    DpStateDerivative *k[order];
 
     // k1
     k[0] = dp_state_derivative(state, system);
 
-    // k1, k2, ..., k_s
+    // k2, ..., k_s
     for (int s = 1; s < order; s++) {
         DpState *state_s = dp_state_copy(state);
 
@@ -23,6 +22,14 @@ static void dp_rk_generic_(DpState *state, DpSystem *system, int order, const do
         k[s] = dp_state_derivative(state_s, system);
         dp_state_destroy(state_s);
     }
+}
+
+void dp_rk_explicit_(DpState *state, DpSystem *system, int order, const double tableau[]) {
+    double h = system->dt;
+    int t_ptr = order * (order - 1) / 2;
+
+    DpStateDerivative *k[order];
+    dp_rk_base_(state, system, order, tableau, k);
 
     // b1, ..., b_s
     for (int s = 0; s < order; s++) {
@@ -46,7 +53,7 @@ void dp_rk_ralston(DpState *state, DpSystem *system) {
         2.0/9, 1.0/3, 4.0/9,
     };
     // clang-format on
-    dp_rk_generic_(state, system, 3, tableau);
+    dp_rk_explicit_(state, system, 3, tableau);
 }
 
 void dp_rk4(DpState *state, DpSystem *system) {
@@ -58,7 +65,7 @@ void dp_rk4(DpState *state, DpSystem *system) {
         1.0/6, 1.0/3, 1.0/3, 1.0/6,
     };
     // clang-format on
-    dp_rk_generic_(state, system, 4, tableau);
+    dp_rk_explicit_(state, system, 4, tableau);
 }
 
 void dp_rk38(DpState *state, DpSystem *system) {
@@ -70,7 +77,7 @@ void dp_rk38(DpState *state, DpSystem *system) {
          1.0/8,  3.0/8, 3.0/8, 1.0/8,
     };
     // clang-format on
-    dp_rk_generic_(state, system, 4, tableau);
+    dp_rk_explicit_(state, system, 4, tableau);
 }
 
 void dp_rk_dopri(DpState *state, DpSystem *system) {
@@ -85,5 +92,5 @@ void dp_rk_dopri(DpState *state, DpSystem *system) {
         5179.0/57600,  0.0,          7571.0/16695, 393.0/640, -92097.0/339200, 187.0/2100, 1.0/40,
     };
     // clang-format on
-    dp_rk_generic_(state, system, 7, tableau);
+    dp_rk_explicit_(state, system, 7, tableau);
 }
