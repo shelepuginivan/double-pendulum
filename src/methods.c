@@ -1,7 +1,7 @@
 #include "methods.h"
 
-void dp_rk_base_(DpState *state, DpSystem *system, int order, const double tableau[],
-                 DpStateDerivative *k[order]) {
+void dp_rk_base_(DpState *state, DpSystem *system, int size, const double tableau[],
+                 DpStateDerivative *k[size]) {
     double h = system->dt;
     int t_ptr = 0;
 
@@ -9,7 +9,7 @@ void dp_rk_base_(DpState *state, DpSystem *system, int order, const double table
     k[0] = dp_state_derivative(state, system);
 
     // k_2, ..., k_s
-    for (int s = 1; s < order; s++) {
+    for (int s = 1; s < size; s++) {
         DpState *state_s = dp_state_copy(state);
 
         for (int i = 0; i < s; i++) {
@@ -24,15 +24,15 @@ void dp_rk_base_(DpState *state, DpSystem *system, int order, const double table
     }
 }
 
-double dp_rk_explicit_(DpState *state, DpSystem *system, int order, const double tableau[]) {
+double dp_rk_explicit_(DpState *state, DpSystem *system, int size, const double tableau[]) {
     double h = system->dt;
-    int t_ptr = order * (order - 1) / 2;
+    int t_ptr = size * (size - 1) / 2;
 
-    DpStateDerivative *k[order];
-    dp_rk_base_(state, system, order, tableau, k);
+    DpStateDerivative *k[size];
+    dp_rk_base_(state, system, size, tableau, k);
 
     // b_1, ..., b_s
-    for (int s = 0; s < order; s++) {
+    for (int s = 0; s < size; s++) {
         double b_i = tableau[t_ptr++];
         dp_derivative_scale_mut(k[s], h * b_i);
 
@@ -47,20 +47,20 @@ double dp_rk_explicit_(DpState *state, DpSystem *system, int order, const double
     return 1.0;
 }
 
-double dp_rk_embedded_(DpState *state, DpSystem *system, int order, const double tableau[]) {
+double dp_rk_embedded_(DpState *state, DpSystem *system, int size, const double tableau[]) {
     double h = system->dt;
-    int t_ptr = order * (order - 1) / 2;
+    int t_ptr = size * (size - 1) / 2;
 
-    DpStateDerivative *k[order];
-    dp_rk_base_(state, system, order, tableau, k);
+    DpStateDerivative *k[size];
+    dp_rk_base_(state, system, size, tableau, k);
 
     DpState *state_hat = dp_state_copy(state);
 
     // b_1, ..., b_s
     // b*_1, ..., b*_s
-    for (int s = 0; s < order; s++) {
+    for (int s = 0; s < size; s++) {
         double b_i = tableau[t_ptr];
-        double bhat_i = tableau[order + t_ptr++];
+        double bhat_i = tableau[size + t_ptr++];
 
         state->phi1 += h * b_i * k[s]->omega1;
         state->phi2 += h * b_i * k[s]->omega2;
@@ -125,7 +125,7 @@ double dp_rk38(DpState *state, DpSystem *system) {
     return dp_rk_explicit_(state, system, 4, tableau);
 }
 
-double dp_rk_dopri(DpState *state, DpSystem *system) {
+double dp_rk_dopri5(DpState *state, DpSystem *system) {
     // clang-format off
     double tableau[] = {
         1.0/5,
@@ -139,4 +139,55 @@ double dp_rk_dopri(DpState *state, DpSystem *system) {
     };
     // clang-format on
     return dp_rk_embedded_(state, system, 7, tableau);
+}
+
+double dp_rk_dopri8(DpState *state, DpSystem *system) {
+    // clang-format off
+    double tableau[] = {
+        // a
+        1.0/18,
+        1.0/12,                  1.0/12,
+        1.0/8,                   0.0,   1.0/8,
+        5.0/16,                  0.0,   0.0,   5.0/16,
+        3.0/8,                   0.0,   0.0,   9.0/32, 3.0/32,
+        59.0/400,                0.0,   0.0,   0.0,    29.0/200,                 17.0/100,
+        93.0/200,                0.0,   0.0,   0.0,    -3.0/100,                 3.0/25,   6.0/25,
+        5490023248.0/9719169821, 0.0,   0.0,   0.0,    -131109400.0/818820643.0, 0.0,      0.0,    157592048.0/1789788493.0,
+        13.0/20,                 0.0,   0.0,   0.0,    0.0,                      0.0,      0.0,    13.0/20,                  0.0,
+        1201146811.0/1299019798, 0.0,   0.0,   0.0,    0.0,                      0.0,      0.0,    -3.0/7,                   3.0/7, 6.0/7,
+        845823298.0/1128381751,  0.0,   0.0,   0.0,    0.0,                      0.0,      0.0,    0.0,                      0.0,   0.0,   1.0,
+        0.0,                     0.0,   0.0,   0.0,    0.0,                      0.0,      0.0,    0.0,                      0.0,   0.0,   0.0, 1.0,
+        // b
+        14005451.0/335480064,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -59238493.0/1068277825,
+        181606767.0/758867731,
+        561292985.0/797845732,
+        -1041891430.0/1371343529,
+        760417239.0/1151165299,
+        118820643.0/751138087,
+        -528747749.0/2220607170,
+        1.0/4,
+        0.0,
+        // b*
+        13451932.0/455176623,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -808719846.0/976000145,
+        1757004468.0/5645159321,
+        656045339.0/265891186,
+        -3867574721.0/1518517206,
+        465885868.0/322736535,
+        53011238.0/667516719,
+        2.0/45,
+        0.0,
+        0.0
+    };
+    // clang-format on
+    return dp_rk_embedded_(state, system, 13, tableau);
 }

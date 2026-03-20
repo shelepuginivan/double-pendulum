@@ -42,9 +42,12 @@ DpSimulation *dp_simulation_new_from_env() {
     } else if (strcmp(stepfn, "RK3/8") == 0) {
         s->stepfn = dp_rk38;
         s->stepfn_order = 4;
-    } else if (strcmp(stepfn, "DOPRI") == 0) {
-        s->stepfn = dp_rk_dopri;
-        s->stepfn_order = 4;
+    } else if (strcmp(stepfn, "DOPRI5") == 0) {
+        s->stepfn = dp_rk_dopri5;
+        s->stepfn_order = 5;
+    } else if (strcmp(stepfn, "DOPRI8") == 0) {
+        s->stepfn = dp_rk_dopri8;
+        s->stepfn_order = 8;
     }
 
     return s;
