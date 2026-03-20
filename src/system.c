@@ -48,6 +48,8 @@ DpSystem *dp_system_new_from_env() {
     dp_env_load_into_double("DP_SYSTEM_RTOL_OMEGA1", &system->rtol_omega1);
     dp_env_load_into_double("DP_SYSTEM_ATOL_OMEGA2", &system->atol_omega2);
     dp_env_load_into_double("DP_SYSTEM_RTOL_OMEGA2", &system->rtol_omega2);
+    dp_env_load_into_double("DP_SYSTEM_ERR_MIN_FACTOR", &system->err_min_factor);
+    dp_env_load_into_double("DP_SYSTEM_ERR_MAX_FACTOR", &system->err_max_factor);
 
     return system;
 }
