@@ -135,3 +135,23 @@ ffmpeg \
 ```
 
 ![Overlay example](./assets/overlay.gif)
+
+
+## ODE computation method comparison
+
+Finally, I've implemented the ability to compare point positions across
+different simulations. For instance, this can be used to plot error graphs for
+various ODE solvers:
+
+```sh
+# Generate CSV files for each supported method
+for method in "ralston" "RK4" "RK38" "DOPRI5" "DOPRI8"; do
+    DP_SIMULATION_METHOD=$method DP_SIMULATION_OUTPUT=${method}.csv ./build/double-pendulum
+done
+
+# uv run ./graphics/methods.py [csv 1] [csv 2] [csv 3] [...]
+# The first CSV file is the reference
+uv run ./graphics/methods.py DOPRI8.csv DOPRI5.csv RK38.csv RK4.csv ralston.csv
+```
+
+![ODE solvers comparison](./assets/methods.png)
