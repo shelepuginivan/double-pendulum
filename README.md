@@ -112,3 +112,24 @@ sampling of coordinates.
 
 Radius of the weight points are controlled by `DP_SYSTEM_M1` and `DP_SYSTEM_M2`
 env variables (`DEFAULT_DOT_RADIUS` constant is used by default).
+
+You can also overlay multiple animations with transparency using [ffmpeg](https://ffmpeg.org/):
+
+```sh
+DP_SIMULATION_DURATION=60 DP_SYSTEM_PHI1=3.14159265358979323846 DP_SIMULATION_OUTPUT=1.csv ./build/double-pendulum
+DP_SIMULATION_DURATION=60 DP_SYSTEM_PHI1=3.141592653589 DP_SIMULATION_OUTPUT=2.csv ./build/double-pendulum
+
+DP_ANIMATION_DATASET=1.csv uv run manim -o 1.mp4 -qh ./graphics/animation.py DoublePendulum
+DP_ANIMATION_DATASET=2.csv uv run manim -o 2.mp4 -qh ./graphics/animation.py DoublePendulum
+
+# Overlay multiple videos using transparency filter.
+# Adjust the scale as needed.
+ffmpeg \
+    -i ./media/videos/animation/1080p24/1.mp4 -i ./media/videos/animation/1080p24/2.mp4 \
+    -filter_complex " \
+        [0:v]setpts=PTS-STARTPTS, scale=1920x1080[top]; \
+        [1:v]setpts=PTS-STARTPTS, scale=1920x1080, \
+             format=yuva420p,colorchannelmixer=aa=0.5[bottom]; \
+        [top][bottom]overlay=shortest=1" \
+    -acodec libvo_aacenc -vcodec libx264 out.mp4
+```

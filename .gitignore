@@ -17,5 +17,6 @@ wheels/
 # Misc
 *.csv
 *.png
+*.mp4
 !assets/chaos.png
 media/
