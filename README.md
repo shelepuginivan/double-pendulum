@@ -41,11 +41,11 @@ variables.
 | `DP_SYSTEM_ERR_MIN_FACTOR` | Min dt scaling factor for embedded methods | _double_ | 0.25    |
 | `DP_SYSTEM_ERR_MAX_FACTOR` | Max dt scaling factor for embedded methods | _double_ | 4.0     |
 
-| Variable                 | Description                    | Value                                          | Default |
-| ------------------------ | ------------------------------ | ---------------------------------------------- | ------- |
-| `DP_SIMULATION_DURATION` | Simulation duration in seconds | _double_                                       | 30      |
-| `DP_SIMULATION_METHOD`   | ODE computation method         | "ralston", "RK4", "RK3/8", "DOPRI5", "DOPRI8"  | "RK4"   |
-| `DP_SIMULATION_OUTPUT`   | Output CSV file                | _path_ or "-" for stdout                       | "-"     |
+| Variable                 | Description                    | Value                                                    | Default |
+| ------------------------ | ------------------------------ | -------------------------------------------------------- | ------- |
+| `DP_SIMULATION_DURATION` | Simulation duration in seconds | _double_                                                 | 30      |
+| `DP_SIMULATION_METHOD`   | ODE computation method         | "ralston", "RK4", "RK3/8" (= "RK38"), "DOPRI5", "DOPRI8" | "RK4"   |
+| `DP_SIMULATION_OUTPUT`   | Output CSV file                | _path_ or "-" for stdout                                 | "-"     |
 
 The resulting CSV file contains rows with coordinates of weights
 (`x1,y1,x2,y2`).
@@ -113,7 +113,7 @@ sampling of coordinates.
 Radius of the weight points are controlled by `DP_SYSTEM_M1` and `DP_SYSTEM_M2`
 env variables (`DEFAULT_DOT_RADIUS` constant is used by default).
 
-You can also overlay multiple animations with transparency using [ffmpeg](https://ffmpeg.org/):
+You can also overlay multiple animations with transparency using [FFmpeg](https://ffmpeg.org/):
 
 ```sh
 DP_SIMULATION_DURATION=60 DP_SYSTEM_PHI1=3.14159265358979323846 DP_SIMULATION_OUTPUT=1.csv ./build/double-pendulum
@@ -139,8 +139,8 @@ ffmpeg \
 
 ## ODE computation method comparison
 
-Finally, I've implemented the ability to compare point positions across
-different simulations. For instance, this can be used to plot error graphs for
+Finally, I've implemented comparison of point positions across different
+simulations. For instance, this can be used to plot relative error graphs for
 various ODE solvers:
 
 ```sh
@@ -155,3 +155,12 @@ uv run ./graphics/methods.py DOPRI8.csv DOPRI5.csv RK38.csv RK4.csv ralston.csv
 ```
 
 ![ODE solvers comparison](./assets/methods.png)
+
+Configuration:
+
+| Variable            | Description        | Value   | Default     |
+| ------------------- | ------------------ | ------- | ----------- |
+| `DP_METHODS_OUTPUT` | Output image file  | _path_  | methods.png |
+
+As usual, `DP_SYSTEM_DT` is used for configuration as well. In this case, it
+controls the values of X-axis.
