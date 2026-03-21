@@ -7,6 +7,7 @@
 #include "methods.h"
 #include "state.h"
 #include "system.h"
+#include "util.h"
 
 DpSimulation *dp_simulation_new() {
     DpSimulation *s = (DpSimulation *)malloc(sizeof(DpSimulation));
@@ -84,8 +85,8 @@ int dp_simulation_run(DpSimulation *simulation, DpSystem *system) {
         }
 
         double factor = pow(1.0 / err, exp);
-        factor = fmax(system->err_min_factor, fmin(system->err_max_factor, factor));
-        system->dt *= factor;
+        factor = dp_util_clamp_(factor, system->err_min_factor, system->err_max_factor);
+        system->dt = dp_util_clamp_(system->dt * factor, system->dt_min, system->dt_max);
     }
 
     if (output_is_file) {

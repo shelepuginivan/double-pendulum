@@ -1,6 +1,6 @@
 #include "state.h"
-#include "linear.h"
 #include "system.h"
+#include "util.h"
 
 DpState *dp_state_new(double phi1, double phi2) {
     DpState *state = (DpState *)malloc(sizeof(DpState));

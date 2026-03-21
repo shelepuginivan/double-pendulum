@@ -13,6 +13,8 @@ typedef struct DpSystem {
     double phi2;
     double g;
     double dt;
+    double dt_min;
+    double dt_max;
     double atol_phi1;
     double rtol_phi1;
     double atol_phi2;

@@ -1,5 +1,5 @@
 #include "derivative.h"
-#include "linear.h"
+#include "util.h"
 
 DpStateDerivative *dp_derivative_scale(DpStateDerivative *d, double s) {
     DpStateDerivative *r = (DpStateDerivative *)malloc(sizeof(DpStateDerivative));
@@ -50,7 +50,7 @@ DpStateDerivative *dp_state_derivative(DpState *state, DpSystem *system) {
     f[1] = l1 * v1 * v1 * sin(a1 - a2) - g * sin(a2);
 
     double inv_m[2][2];
-    if (dp_invert_2x2_(m, inv_m) != 0) {
+    if (dp_util_invert_2x2_(m, inv_m) != 0) {
         d->omega1 = v1;
         d->omega2 = v2;
         d->alpha1 = 0.0;

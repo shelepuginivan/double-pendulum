@@ -15,6 +15,8 @@ DpSystem *dp_system_new() {
     system->phi2 = M_PI_2;
     system->g = 9.81;
     system->dt = 1e-4;
+    system->dt_min = 1e-4;
+    system->dt_max = 1e-4;
     system->atol_phi1 = 1e-6;
     system->rtol_phi1 = 1e-4;
     system->atol_phi2 = 1e-6;
@@ -40,6 +42,8 @@ DpSystem *dp_system_new_from_env() {
     dp_env_load_into_double("DP_SYSTEM_PHI2", &system->phi2);
     dp_env_load_into_double("DP_SYSTEM_G", &system->g);
     dp_env_load_into_double("DP_SYSTEM_DT", &system->dt);
+    dp_env_load_into_double("DP_SYSTEM_DT_MIN", &system->dt_min);
+    dp_env_load_into_double("DP_SYSTEM_DT_MAX", &system->dt_max);
     dp_env_load_into_double("DP_SYSTEM_ATOL_PHI1", &system->atol_phi1);
     dp_env_load_into_double("DP_SYSTEM_RTOL_PHI1", &system->rtol_phi1);
     dp_env_load_into_double("DP_SYSTEM_ATOL_PHI2", &system->atol_phi2);
