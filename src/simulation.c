@@ -40,7 +40,7 @@ DpSimulation *dp_simulation_new_from_env() {
     } else if (strcmp(stepfn, "RK4") == 0) {
         s->stepfn = dp_rk4;
         s->stepfn_order = 4;
-    } else if (strcmp(stepfn, "RK3/8") == 0) {
+    } else if (strcmp(stepfn, "RK3/8") == 0 || strcmp(stepfn, "RK38") == 0) {
         s->stepfn = dp_rk38;
         s->stepfn_order = 4;
     } else if (strcmp(stepfn, "DOPRI5") == 0) {
