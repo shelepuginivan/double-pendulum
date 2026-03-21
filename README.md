@@ -133,3 +133,5 @@ ffmpeg \
         [top][bottom]overlay=shortest=1" \
     -acodec libvo_aacenc -vcodec libx264 out.mp4
 ```
+
+![Overlay example](./assets/overlay.gif)
