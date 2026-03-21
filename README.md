@@ -27,7 +27,9 @@ variables.
 | `DP_SYSTEM_PHI1`           | Initial angle of the first rod             | _double_ | π       |
 | `DP_SYSTEM_PHI2`           | Initial angle of the second rod            | _double_ | π/2     |
 | `DP_SYSTEM_G`              | Gravitational acceleration                 | _double_ | 9.81    |
-| `DP_SYSTEM_DT`             | Time delta in seconds                      | _double_ | 0.0001  |
+| `DP_SYSTEM_DT`             | Time delta in seconds                      | _double_ | 1e-4    |
+| `DP_SYSTEM_DT_MIN`         | Min time delta for embedded methods        | _double_ | 1e-4    |
+| `DP_SYSTEM_DT_MAX`         | Max time delta for embedded methods        | _double_ | 1e-4    |
 | `DP_SYSTEM_ATOL_PHI1`      | Absolute tolerance of the first angle      | _double_ | 1e-6    |
 | `DP_SYSTEM_RTOL_PHI1`      | Relative tolerance of the first angle      | _double_ | 1e-4    |
 | `DP_SYSTEM_ATOL_PHI2`      | A. tol. of the second angle                | _double_ | 1e-6    |
@@ -50,7 +52,10 @@ The resulting CSV file contains rows with coordinates of weights
 
 For explicit Runge-Kutta methods (`ralston`, `RK4`, `RK3/8`) the timespan
 between rows is `DP_SYSTEM_DT`, for embedded (`DOPRI5`, `DOPRI8`) it is scaled
-after each step, based on computation error and system parameters.
+after each step, based on computation error and system parameters. The scaling
+factor is clamped between `DP_SYSTEM_ERR_MIN_FACTOR` and
+`DP_SYSTEM_ERR_MAX_FACTOR`, and the time delta itself is clamped between
+`DP_SYSTEM_DT_MIN` and `DP_SYSTEM_DT_MAX`.
 
 
 ## Chaos plot
