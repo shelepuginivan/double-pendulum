@@ -1,8 +1,7 @@
-from dataclasses import dataclass
-import sys
 import math
+import sys
+from dataclasses import dataclass
 from typing import Iterable
-
 
 import matplotlib
 
@@ -10,6 +9,13 @@ matplotlib.use("Agg")
 
 import matplotlib.pyplot as plt
 import numpy as np
+from pydantic import Field, PositiveFloat
+from pydantic_settings import BaseSettings
+
+
+class Config(BaseSettings):
+    dt: PositiveFloat = Field(default=0.0001, alias="dp_system_dt")
+    output: str = Field(default="methods.png", alias="dp_methods_output")
 
 
 @dataclass
@@ -24,7 +30,7 @@ class Point:
 
 
 class ErrorPlotter:
-    def __init__(self, *csv_files: str) -> None:
+    def __init__(self, cfg: Config, *csv_files: str) -> None:
         if len(csv_files) < 2:
             raise ValueError("must provide at least 2 CSV files")
 
@@ -33,10 +39,10 @@ class ErrorPlotter:
         self.__ref = ref
         self.__files = rest
         self.__ref_points = list(self.__read_csv(ref))
-        self.__time = np.arange(len(self.__ref_points)) * 1e-4
-        pass
+        self.__time = np.arange(len(self.__ref_points)) * cfg.dt
+        self.__output = cfg.output
 
-    def plot(self, output: str) -> None:
+    def plot(self) -> None:
         plt.xlabel("Time, s")
         plt.ylabel("Error")
         plt.title("ODE computation method comparison")
@@ -47,7 +53,7 @@ class ErrorPlotter:
             self.plot_csv(file)
 
         plt.legend()
-        plt.savefig(output, dpi=300)
+        plt.savefig(self.__output, dpi=300)
 
     def plot_csv(self, file: str) -> None:
         dist = []
@@ -64,9 +70,10 @@ class ErrorPlotter:
 
 
 def main() -> None:
+    cfg = Config()  # type: ignore
     csv_files = sys.argv[1:]
-    plotter = ErrorPlotter(*csv_files)
-    plotter.plot("methods.png")
+    plotter = ErrorPlotter(cfg, *csv_files)
+    plotter.plot()
 
 
 if __name__ == "__main__":
